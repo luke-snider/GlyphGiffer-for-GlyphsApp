@@ -21,4 +21,4 @@ NOTE! It currently doesn't seem to support component Glyphs!
 ![alt text](https://github.com/luke-snider/GlyphGiffer-for-GlyphsApp/blob/master/GlyphGiffer_screen2_GApp.gif)
 
 
-![alt text](https://github.com/luke-snider/GlyphGiffer-for-GlyphsAppr/blob/master/GlyphGiffer_screen3_GApp.gif)
+![alt text](https://github.com/luke-snider/GlyphGiffer-for-GlyphsApp/blob/master/GlyphGiffer_screen3_GApp.gif)
