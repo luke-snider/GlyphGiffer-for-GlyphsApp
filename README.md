@@ -13,7 +13,7 @@ GlyphsApp Plugin - GlyphGiffer - lets you export glyphs from a folder of .ufo/.g
 
 • Y-Shift enables y-shifting of the drawn glyph on the canvas
 
-
+NOTE! It currently doesn't seem to support component Glyphs!
 
 ![alt text](https://github.com/luke-snider/GlyphGiffer-for-GlyphsApp/blob/master/GlyphGiffer_screen1_GApp.png)
 
