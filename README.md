@@ -15,6 +15,10 @@ GlyphsApp Plugin - GlyphGiffer - lets you export glyphs from a folder of .ufo/.g
 
 NOTE! It currently doesn't seem to support component Glyphs!
 
+
+IMPORTANT! Needs Drawbot! https://github.com/schriftgestalt/DrawBotGlyphsPlugin
+
+
 ![alt text](https://github.com/luke-snider/GlyphGiffer-for-GlyphsApp/blob/master/GlyphGiffer_screen1_GApp.png)
 
 
