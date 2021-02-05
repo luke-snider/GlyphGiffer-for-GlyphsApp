@@ -12,18 +12,12 @@ from GlyphsApp.plugins import *
 hasAllModules = True
 
 try:
-	import objc, os, sys, datetime, time, random
-	import os.path
-	from os import path
 	from collections import Counter
 	from AppKit import NSColor, NSRunAlertPanel, NSLog
-
+	import os, sys, time, datetime, random
 	from GlyphsApp import *
 	from vanilla import *
-	from vanilla.dialogs import getFolder
-	from robofab.interface.all.dialogs import ProgressBar
-	### 4 drawBot
-	#from drawBot import *
+	# from robofab.interface.all.dialogs import ProgressBar
 except:
 	hasAllModules = False
 	print("Exception in GlyphGiffer:")
@@ -116,7 +110,7 @@ class GlyphGiffer():
 			self.w.BGtransparentColor.enable(False)
 
 	def colorWell1UserInput(self, sender):
-		#print self.w.glyphFillColor.get()
+		#print(self.w.glyphFillColor.get())
 		if self.w.fillLikeStroke.get() == 1:
 			self.w.glyphStrokeColor.set(self.w.glyphFillColor.get())
 
@@ -160,11 +154,9 @@ class GlyphGiffer():
 		if self.w.fillLikeStroke.get() == 1:
 			self.w.glyphStrokeColor.set(self.w.glyphFillColor.get())
 
-
-
 	def loadFontsFromFolder(self, sender):
 		### LOADING FONTS FROM FOLDER
-		folder_imported_OTFs = getFolder()
+		folder_imported_OTFs = vanilla.getFolder()
 		if folder_imported_OTFs != None:
 			### closing all previous opened fonts from folder! + clearing the output
 			if len(self.loadedFontList) != 0:
@@ -178,13 +170,13 @@ class GlyphGiffer():
 			_imported_OTF_path = self.walk(self.imported_files_folder)
 			if len(_imported_OTF_path) > 0:
 					for i, imported_OTF_path in enumerate(_imported_OTF_path):
-						progressBar = ProgressBar(title="opening font %s of %s" % (str(i+1), str(len(_imported_OTF_path))), label="...")
+						#progressBar = ProgressBar(title="opening font %s of %s" % (str(i+1), str(len(_imported_OTF_path))), label="...")
 						#GLYPHS APP
-						#print _imported_OTF_path
+						#print(_imported_OTF_path)
 						self.loadedFontList = _imported_OTF_path#, showUI=False
 						#ROBOFONT
 						#self.loadedFontList.append(OpenFont(imported_OTF_path))#, showUI=False
-						progressBar.close()
+						#progressBar.close()
 		self.w.amountOfLoadedFonts.set(len(self.loadedFontList))
 
 
@@ -345,12 +337,12 @@ class GlyphGiffer():
 
 		tickCount = (len(glyphNames)*int(str(self.w.speed.get())))*len(self.loadedFontList)
 		tick = 0
-		progressBar = ProgressBar(title="", ticks=tickCount, label="generating .gifs ...")
+		#progressBar = ProgressBar(title="", ticks=tickCount, label="generating .gifs ...")
 
 		for i, glyphName in enumerate(glyphNames):
 
 			tick = tick+1
-			progressBar.tick(tick)
+			#progressBar.tick(tick)
 
 			for thisFontPath in self.loadedFontList:
 				thisFont = Glyphs.open(thisFontPath, False)
@@ -358,7 +350,7 @@ class GlyphGiffer():
 				master = thisFont.masters[0]
 
 				tick = tick+1
-				progressBar.tick(tick)
+				#progressBar.tick(tick)
 
 				countForTransparency += 1
 				# RF
@@ -377,7 +369,7 @@ class GlyphGiffer():
 				for index in range(int(str(self.w.speed.get()))):
 
 					tick = tick+1
-					progressBar.tick(tick)
+					#progressBar.tick(tick)
 
 					drawBot.newPage(pageWidth, pageHeight)
 
@@ -454,7 +446,7 @@ class GlyphGiffer():
 
 		drawBot.saveImage([exportstring])
 		#endDrawing()
-		progressBar.close()
+		#progressBar.close()
 
 	def AddStamp(self, thisFont):
 		stamp = []
@@ -464,7 +456,7 @@ class GlyphGiffer():
 			modified = time.strftime('%d/%m/%Y', time.gmtime(os.path.getmtime(thisFont.filepath)))
 			hourAndMinute = time.strftime('%H:%M', time.gmtime(os.path.getmtime(thisFont.filepath)))
 			finalModificationDate = modified[:-4]+modified[-2:]+"  "+hourAndMinute
-			#print finalModificationDate
+			#print(finalModificationDate)
 			stamp.append(finalModificationDate)
 		return stamp
 
@@ -473,11 +465,11 @@ class GlyphGiffer():
 
 class GlyphGifferTool(GeneralPlugin):
 
-	objc.python_method
+	@objc.python_method
 	def settings(self):
 		self.name = Glyphs.localize({'en': u'GlyphGiffer', 'de': u'GlyphGiffer'})
 
-	objc.python_method
+	@objc.python_method
 	def start(self):
 		newMenuItem = NSMenuItem(self.name, self.showWindow_)
 		Glyphs.menu[EDIT_MENU].append(newMenuItem)
@@ -485,11 +477,12 @@ class GlyphGifferTool(GeneralPlugin):
 	def showWindow_(self, sender):
 		""" Do something like show a window"""
 		if not hasAllModules:
-			ErrorString = "This plugin needs the vanilla and robofab module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
+			ErrorString = "This plugin needs the vanilla and drawbot module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
 			NSRunAlertPanel("Problem with some modules", ErrorString, "", "", "")
 			return
 		GlyphGiffer()
 
+	@objc.python_method
 	def __file__(self):
 		"""Please leave this method unchanged"""
 		return __file__
