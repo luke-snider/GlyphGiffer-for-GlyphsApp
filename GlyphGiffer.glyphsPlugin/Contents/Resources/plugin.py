@@ -4,51 +4,32 @@
 Lukas Schneider - Revolver Type Foundry - www.revolvertype.com
 GlyphGiffer lets you export glyphs from a folder of font(s) as an animated .gif.
 '''
+from __future__ import print_function
 
 from GlyphsApp.plugins import *
 
 
 hasAllModules = True
-hasCurrentWrapper = False
 
 try:
-	from GlyphsApp import *
-	import os
-	from vanilla import *
-	from vanilla.dialogs import getFolder
-	from robofab.interface.all.dialogs import ProgressBar
-	from AppKit import NSColor
-	### 4 drawBot
-	import random
-	from drawBot import *
 	from collections import Counter
-	import os.path, time
-	from os import path
-	import datetime
+	from AppKit import NSColor, NSRunAlertPanel, NSLog
+	import os, sys, time, datetime, random
+	from GlyphsApp import *
+	from vanilla import *
+	# from robofab.interface.all.dialogs import ProgressBar
 except:
 	hasAllModules = False
-	print "Exception in GlyphGiffer:"
-	print '-'*60
-	traceback.print_exc(file=sys.stdout)
-	print '-'*60
+	print("Exception in GlyphGiffer:")
+	print('-'*60)
+	import traceback
+	NSLog(traceback.format_exc())
+	print('-'*60)
 warned = False
-
-### check for latest version of objectsGS.py
-try:
-	from objectsGS import RFont
-	getGlyph_op = getattr(RFont, "getGlyph", None)
-	if callable(getGlyph_op):
-		hasCurrentWrapper = True
-except:
-	print "Exception in GlyphGiffer - ObjectsGS"
-	print '-'*60
-	traceback.print_exc(file=sys.stdout)
-	print '-'*60
-
 
 class GlyphGiffer():
 
-	def __init__(self): 
+	def __init__(self):
 		self.widthOfTool = 360
 		self.heightOfTool = 300
 
@@ -117,7 +98,7 @@ class GlyphGiffer():
 
 	### UI Callbacks
 	def yShiftGlyphUserInput(self, sender):
-		try: 
+		try:
 			int(self.w.yShiftGlyph.get())
 		except ValueError:
 			self.w.yShiftGlyph.set(100)
@@ -129,7 +110,7 @@ class GlyphGiffer():
 			self.w.BGtransparentColor.enable(False)
 
 	def colorWell1UserInput(self, sender):
-		#print self.w.glyphFillColor.get()
+		#print(self.w.glyphFillColor.get())
 		if self.w.fillLikeStroke.get() == 1:
 			self.w.glyphStrokeColor.set(self.w.glyphFillColor.get())
 
@@ -138,7 +119,7 @@ class GlyphGiffer():
 			self.w.glyphFillColor.set(self.w.glyphStrokeColor.get())
 
 	def validateUserInputSpeed(self, sender):
-		try: 
+		try:
 			int(self.w.speed.get())
 			if int(self.w.speed.get()) <= 0:
 				self.w.speed.set(1)
@@ -148,7 +129,7 @@ class GlyphGiffer():
 			self.w.speed.set(1)
 
 	def validateUserInputPageHeight(self, sender):
-		try: 
+		try:
 			int(self.w.pageHeight.get())
 			if int(self.w.pageHeight.get()) <= 0:
 				self.w.pageHeight.set(10)
@@ -156,13 +137,13 @@ class GlyphGiffer():
 			self.w.pageHeight.set(300)
 
 	def validateUserInputMargin(self, sender):
-		try: 
+		try:
 			float(self.w.canvasMargin.get())
 		except ValueError:
 			self.w.canvasMargin.set(1.2)
 
 	def validateUserInputStrokeThickness(self, sender):
-		try: 
+		try:
 			int(self.w.strokeThickness.get())
 			if int(self.w.strokeThickness.get()) < 0:
 				self.w.strokeThickness.set(0)
@@ -173,11 +154,9 @@ class GlyphGiffer():
 		if self.w.fillLikeStroke.get() == 1:
 			self.w.glyphStrokeColor.set(self.w.glyphFillColor.get())
 
-
-
 	def loadFontsFromFolder(self, sender):
 		### LOADING FONTS FROM FOLDER
-		folder_imported_OTFs = getFolder()
+		folder_imported_OTFs = vanilla.getFolder()
 		if folder_imported_OTFs != None:
 			### closing all previous opened fonts from folder! + clearing the output
 			if len(self.loadedFontList) != 0:
@@ -191,13 +170,13 @@ class GlyphGiffer():
 			_imported_OTF_path = self.walk(self.imported_files_folder)
 			if len(_imported_OTF_path) > 0:
 					for i, imported_OTF_path in enumerate(_imported_OTF_path):
-						progressBar = ProgressBar(title="opening font %s of %s" % (str(i+1), str(len(_imported_OTF_path))), label="...")
+						#progressBar = ProgressBar(title="opening font %s of %s" % (str(i+1), str(len(_imported_OTF_path))), label="...")
 						#GLYPHS APP
-						#print _imported_OTF_path
+						#print(_imported_OTF_path)
 						self.loadedFontList = _imported_OTF_path#, showUI=False
 						#ROBOFONT
 						#self.loadedFontList.append(OpenFont(imported_OTF_path))#, showUI=False
-						progressBar.close()
+						#progressBar.close()
 		self.w.amountOfLoadedFonts.set(len(self.loadedFontList))
 
 
@@ -230,7 +209,7 @@ class GlyphGiffer():
 		for i, value in enumerate(backgroundcolorRandomsRGB):
 			if value == 1:
 				backgroundRandomsValues.append(i)
-	
+
 		return fillRandomValues, strokeRandomValues, backgroundRandomsValues
 
 
@@ -307,7 +286,7 @@ class GlyphGiffer():
 					finalBGcolor.append(value*random())
 				#transparency
 				if i == 3:
-					finalBGcolor.append(transpFactor) 
+					finalBGcolor.append(transpFactor)
 			else:
 				finalBGcolor.append(value)
 		finalBGcolor = map(float, finalBGcolor)
@@ -321,7 +300,7 @@ class GlyphGiffer():
 		path = glyph.naked().getRepresentation("defconAppKit.NSBezierPath")
 		drawPath(path)
 		# draw bounding box
-		#strokeWidth(0) 
+		#strokeWidth(0)
 		#fill(1,1,1,0.5)
 		#rect(glyph.box[0],glyph.box[1],glyph.box[2]-glyph.box[0],glyph.box[3]-glyph.box[1])
 
@@ -348,17 +327,22 @@ class GlyphGiffer():
 		extraSpace = float(self.w.canvasMargin.get())
 
 		countForTransparency = 0
-
-		newDrawing()
+		try:
+			import drawBot
+		except:
+			Message("Missing Module", "Please install DrawBot")
+			return
+		drawBot.newDrawing()
+		
 
 		tickCount = (len(glyphNames)*int(str(self.w.speed.get())))*len(self.loadedFontList)
 		tick = 0
-		progressBar = ProgressBar(title="", ticks=tickCount, label="generating .gifs ...")
+		#progressBar = ProgressBar(title="", ticks=tickCount, label="generating .gifs ...")
 
 		for i, glyphName in enumerate(glyphNames):
 
 			tick = tick+1
-			progressBar.tick(tick)
+			#progressBar.tick(tick)
 
 			for thisFontPath in self.loadedFontList:
 				thisFont = Glyphs.open(thisFontPath, False)
@@ -366,8 +350,8 @@ class GlyphGiffer():
 				master = thisFont.masters[0]
 
 				tick = tick+1
-				progressBar.tick(tick)
-	
+				#progressBar.tick(tick)
+
 				countForTransparency += 1
 				# RF
 				# UPM = thisFont.info.unitsPerEm
@@ -385,28 +369,28 @@ class GlyphGiffer():
 				for index in range(int(str(self.w.speed.get()))):
 
 					tick = tick+1
-					progressBar.tick(tick)
+					#progressBar.tick(tick)
 
-					newPage(pageWidth, pageHeight)
+					drawBot.newPage(pageWidth, pageHeight)
 
 					############ START Drawing BG
-					save()
+					drawBot.save()
 					# getting colors (including Random if used)
 					glyphFillColor = self._colorization(countForTransparency)[0]
 					glyphStrokeColor = self._colorization(countForTransparency)[1]
 					backgroundColor = self._colorization(countForTransparency)[2]
-						 
-					# draw background 
-					# draw additional BLACK background if Background Transparency fade is active
-					if self.w.BTransparency.get() == 1: 
-						fill(self.w.BGtransparentColor.get())
-						rect(0,0, pageWidth, pageWidth)
-					else:
-						fill(1,1,1,1)
-						rect(0,0, pageWidth, pageWidth)
 
-					fill(*backgroundColor)
-					rect(0,0, pageWidth, pageWidth)
+					# draw background
+					# draw additional BLACK background if Background Transparency fade is active
+					if self.w.BTransparency.get() == 1:
+						drawBot.fill(self.w.BGtransparentColor.get())
+						drawBot.rect(0,0, pageWidth, pageWidth)
+					else:
+						drawBot.fill(1,1,1,1)
+						drawBot.rect(0,0, pageWidth, pageWidth)
+
+					drawBot.fill(*backgroundColor)
+					drawBot.rect(0,0, pageWidth, pageWidth)
 					############### END Drawing BG
 
 					## ONLY IF THE GLYPH EXISTS IN FONT: DRAW GLYPH
@@ -417,24 +401,24 @@ class GlyphGiffer():
 						#RF
 						#glyph = thisFont[glyphName]
 						############ START Glyph(s)
-						# set scale/shift for drawing glyph(s) to pagesize 
-						scale(sc)
+						# set scale/shift for drawing glyph(s) to pagesize
+						drawBot.scale(sc)
 						translateY = -descender+(int(str(self.w.yShiftGlyph.get())))
 						translateX = ((pageHeight / sc) - glyph.width) / 2
-						translate(translateX,translateY)
+						drawBot.translate(translateX,translateY)
 						# set colors for fill and stroke and Stroke thickness of Glyph Drawing
-						stroke(*glyphStrokeColor)
-						strokeWidth(int(str(self.w.strokeThickness.get())))
-						fill(*glyphFillColor)
+						drawBot.stroke(*glyphStrokeColor)
+						drawBot.strokeWidth(int(str(self.w.strokeThickness.get())))
+						drawBot.fill(*glyphFillColor)
 						## GlyphsApp
-						drawPath(glyph.completeBezierPath)
+						drawBot.drawPath(glyph.completeBezierPath)
 						# RF drawGlyph
 						#self._drawGlyph(glyph)
 					## if the glyph doesn't exist: DRAW ONLY BACKGROUND
 					else:
-						print glyphName, "glyph doesn't exist in one of the fonts!"
+						print(glyphName, "glyph doesn't exist in one of the fonts!")
 
-					restore()
+					drawBot.restore()
 					############### END Glyph(s)
 
 					############### START title and time stamp
@@ -446,9 +430,9 @@ class GlyphGiffer():
 						x, y, w, h = 0, 5, int(self.w.pageHeight.get()), 10
 						fill(self.w.titleColor.get())
 						#fill(1, 0, 0, 0.2)
-						fontSize(7)
+						drawBot.fontSize(7)
 						overflow = textBox("  ".join(stamp).strip("  "), (x, y, w, h), align="center")
-						restore()
+						drawBot.restore()
 					############### END title and time stamp
 
 		exportstring = str(os.path.expanduser('~'))+"/Desktop/"+glyphName+".gif"
@@ -460,9 +444,9 @@ class GlyphGiffer():
 			date = "_%d-%d-%d_%dh-%dm-%ds" % (now.day, now.month, int(str(now.year)[2:]), now.hour, now.minute, now.second)
 			exportstring = str(os.path.expanduser('~'))+"/Desktop/"+glyphName+date+".gif"
 
-		saveImage([exportstring])
+		drawBot.saveImage([exportstring])
 		#endDrawing()
-		progressBar.close()
+		#progressBar.close()
 
 	def AddStamp(self, thisFont):
 		stamp = []
@@ -472,7 +456,7 @@ class GlyphGiffer():
 			modified = time.strftime('%d/%m/%Y', time.gmtime(os.path.getmtime(thisFont.filepath)))
 			hourAndMinute = time.strftime('%H:%M', time.gmtime(os.path.getmtime(thisFont.filepath)))
 			finalModificationDate = modified[:-4]+modified[-2:]+"  "+hourAndMinute
-			#print finalModificationDate
+			#print(finalModificationDate)
 			stamp.append(finalModificationDate)
 		return stamp
 
@@ -480,33 +464,25 @@ class GlyphGiffer():
 
 
 class GlyphGifferTool(GeneralPlugin):
+
+	@objc.python_method
 	def settings(self):
 		self.name = Glyphs.localize({'en': u'GlyphGiffer', 'de': u'GlyphGiffer'})
-	
+
+	@objc.python_method
 	def start(self):
-		try: 
-			# new API in Glyphs 2.3.1-910
-			newMenuItem = NSMenuItem(self.name, self.showWindow)
-			Glyphs.menu[EDIT_MENU].append(newMenuItem)
-		except:
-			mainMenu = Glyphs.mainMenu()
-			s = objc.selector(self.showWindow,signature='v@:@')
-			newMenuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(self.name, s, "")
-			newMenuItem.setTarget_(self)
-			mainMenu.itemWithTag_(5).submenu().addItem_(newMenuItem)
-	
-	def showWindow(self, sender):
+		newMenuItem = NSMenuItem(self.name, self.showWindow_)
+		Glyphs.menu[EDIT_MENU].append(newMenuItem)
+
+	def showWindow_(self, sender):
 		""" Do something like show a window"""
 		if not hasAllModules:
-			ErrorString = "This plugin needs the vanilla, robofab and fontTools module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
+			ErrorString = "This plugin needs the vanilla and drawbot module to be installed for python %d.%d." % (sys.version_info[0], sys.version_info[1])
 			NSRunAlertPanel("Problem with some modules", ErrorString, "", "", "")
 			return
-		if not hasCurrentWrapper:
-			NSRunAlertPanel("Problem with some RoboFab wrapper", "Please install the latest version of the file \"objectsGS.py\" from https://github.com/schriftgestalt/Glyphs-Scripts", "", "", "")
-			return
 		GlyphGiffer()
-	
+
+	@objc.python_method
 	def __file__(self):
 		"""Please leave this method unchanged"""
 		return __file__
-	
