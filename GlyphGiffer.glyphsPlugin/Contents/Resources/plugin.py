@@ -17,6 +17,7 @@ try:
 	import os, sys, time, datetime, random
 	from GlyphsApp import *
 	from vanilla import *
+	from vanilla.dialogs import getFolder
 	# from robofab.interface.all.dialogs import ProgressBar
 except:
 	hasAllModules = False
@@ -156,7 +157,7 @@ class GlyphGiffer():
 
 	def loadFontsFromFolder(self, sender):
 		### LOADING FONTS FROM FOLDER
-		folder_imported_OTFs = vanilla.getFolder()
+		folder_imported_OTFs = getFolder()
 		if folder_imported_OTFs != None:
 			### closing all previous opened fonts from folder! + clearing the output
 			if len(self.loadedFontList) != 0:
@@ -439,7 +440,7 @@ class GlyphGiffer():
 
 		## check if file exists - in order not to write a new file instead of overwriting it.
 		PATH = os.path.expanduser('~') + "/Desktop/"+glyphName+".gif"
-		if path.isfile(PATH) == True:
+		if os.path.isfile(PATH) == True:
 			now = datetime.datetime.now()
 			date = "_%d-%d-%d_%dh-%dm-%ds" % (now.day, now.month, int(str(now.year)[2:]), now.hour, now.minute, now.second)
 			exportstring = str(os.path.expanduser('~'))+"/Desktop/"+glyphName+date+".gif"
