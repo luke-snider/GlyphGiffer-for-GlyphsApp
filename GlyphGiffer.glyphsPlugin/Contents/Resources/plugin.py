@@ -436,7 +436,7 @@ class GlyphGiffer():
 						drawBot.restore()
 					############### END title and time stamp
 
-		exportstring = str(os.path.expanduser('~'))+"/Desktop/"+glyphName+".gif"
+			exportstring = str(os.path.expanduser('~'))+"/Desktop/"+glyphName+".gif"
 
 		## check if file exists - in order not to write a new file instead of overwriting it.
 		PATH = os.path.expanduser('~') + "/Desktop/"+glyphName+".gif"
