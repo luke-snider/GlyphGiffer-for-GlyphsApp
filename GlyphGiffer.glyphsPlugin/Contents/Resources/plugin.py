@@ -429,10 +429,10 @@ class GlyphGiffer():
 					else:
 						drawBot.save()
 						x, y, w, h = 0, 5, int(self.w.pageHeight.get()), 10
-						fill(self.w.titleColor.get())
+						drawBot.fill(self.w.titleColor.get())
 						#fill(1, 0, 0, 0.2)
 						drawBot.fontSize(7)
-						overflow = textBox("  ".join(stamp).strip("  "), (x, y, w, h), align="center")
+						overflow = drawBot.textBox("  ".join(stamp).strip("  "), (x, y, w, h), align="center")
 						drawBot.restore()
 					############### END title and time stamp
 
