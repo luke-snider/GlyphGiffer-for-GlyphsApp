@@ -427,7 +427,7 @@ class GlyphGiffer():
 					if len(stamp) == 0:
 						pass
 					else:
-						save()
+						drawBot.save()
 						x, y, w, h = 0, 5, int(self.w.pageHeight.get()), 10
 						drawBot.fill(self.w.titleColor.get())
 						#fill(1, 0, 0, 0.2)
