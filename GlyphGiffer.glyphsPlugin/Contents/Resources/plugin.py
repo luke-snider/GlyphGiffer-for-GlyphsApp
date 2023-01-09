@@ -432,7 +432,7 @@ class GlyphGiffer():
 						drawBot.fill(self.w.titleColor.get())
 						#fill(1, 0, 0, 0.2)
 						drawBot.fontSize(7)
-						overflow = drawBot.textBox(" ".join(stamp).strip(" "), (x, y, w, h), align="center")
+						overflow = drawBot.textBox("  ".join(stamp).strip("  "), (x, y, w, h), align="center")
 						drawBot.restore()
 					############### END title and time stamp
 
